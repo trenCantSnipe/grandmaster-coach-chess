@@ -1,0 +1,5 @@
+{
+  "name": "Grandmaster Coach Chess",
+  "description": "A high-end chess application featuring a world-champion AI coach powered by Gemini, providing deep positional analysis and strategic guidance.",
+  "requestFramePermissions": []
+}
