@@ -11,17 +11,17 @@ export async function getCoachAnalysis(
   const model = 'gemini-3-pro-preview';
   
   const prompt = `
-    You are a world-class Chess Grandmaster and Coach. 
-    Current FEN: ${fen}
-    Move History: ${history.join(', ')}
+    You are a world-class Chess Grandmaster and Strategy Coach. 
+    Current State (FEN): ${fen}
+    Path History: ${history.join(', ')}
     
-    ${userMessage ? `The player says: "${userMessage}"` : "Analyze the current position and suggest the best move."}
+    ${userMessage ? `The user asks: "${userMessage}"` : "Analyze the current state and provide the optimal transition (move)."}
     
-    Provide your response in JSON format including:
-    1. "analysis": A deep strategic explanation of the current position.
-    2. "suggestedMove": The best move in algebraic notation (e.g., "Nf3").
-    3. "eval": A numerical evaluation (positive for white, negative for black).
-    4. "coachingTip": A piece of general chess wisdom relevant to this specific position.
+    Respond STRICTLY in JSON:
+    1. "analysis": A deep grandmaster-level explanation.
+    2. "suggestedMove": Best move in Standard Algebraic Notation (e.g., "e4", "Nf3").
+    3. "eval": Float evaluation from White's perspective (+1.0 is +1 pawn for white).
+    4. "coachingTip": A concise strategic axiom.
   `;
 
   try {
@@ -29,7 +29,7 @@ export async function getCoachAnalysis(
       model,
       contents: prompt,
       config: {
-        thinkingConfig: { thinkingBudget: 32768 },
+        thinkingConfig: { thinkingBudget: 16000 },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -44,16 +44,16 @@ export async function getCoachAnalysis(
       }
     });
 
-    return JSON.parse(response.text);
+    return JSON.parse(response.text || "{}");
   } catch (error) {
-    console.error("Gemini Coaching Error:", error);
+    console.error("Coaching Analysis Error:", error);
     return null;
   }
 }
 
 export async function getQuickCommentary(fen: string, lastMove: string) {
-  const model = 'gemini-2.5-flash-lite-latest';
-  const prompt = `Give a very short, witty grandmaster commentary on the move ${lastMove} in this position: ${fen}. Max 15 words.`;
+  const model = 'gemini-flash-lite-latest';
+  const prompt = `Context: Chess game at ${fen}. Last move: ${lastMove}. Give a 1-sentence witty, sharp Grandmaster reaction to this move. Max 12 words.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -62,6 +62,6 @@ export async function getQuickCommentary(fen: string, lastMove: string) {
     });
     return response.text;
   } catch (error) {
-    return "Interesting choice.";
+    return "An interesting deviation in the lines.";
   }
 }
