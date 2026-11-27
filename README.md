@@ -1,20 +1,32 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# ♟️ Grandmaster Coach
 
-# Run and deploy your AI Studio app
+A chess app with an AI coach that explains your moves. It doesn't just play against you: it stops to point out mistakes, explains the positional idea behind a better move, and comments on the game as it goes.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1EH5JoCLxCvREyH3tn9l_j2HcQB3xgAnP
+- **Playable board** with full rule enforcement via `chess.js` (legal moves, check, mate, draws)
+- **Coach analysis**: Gemini returns a structured evaluation of the position (JSON schema output), with reasoning ("thinking") turned on for deeper lines
+- **Live commentary**: short quick-take comments after each move
+- **Correct-as-you-play**: flags inaccuracies and suggests stronger alternatives
 
-## Run Locally
+## Tech stack
 
-**Prerequisites:**  Node.js
+React 19 · TypeScript · Vite · chess.js · react-chessboard · Google Gemini API (`@google/genai`)
 
+## How it works
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```
+board move ──► chess.js (validate, FEN) ──► geminiService.getCoachAnalysis(FEN, history)
+                                              └─► structured JSON: evaluation, best move, explanation
+```
+
+## Run locally
+
+```bash
+git clone https://github.com/trenCantSnipe/grandmaster-coach-chess.git && cd grandmaster-coach-chess
+npm install
+echo "GEMINI_API_KEY=your_key_here" > .env.local
+npm run dev
+```
+
+Get a free key at [Google AI Studio](https://aistudio.google.com/apikey). The key stays in `.env.local`, which is git-ignored.
